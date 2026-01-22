@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 07, 2026 at 04:48 PM
+-- Generation Time: Jan 18, 2026 at 04:40 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -30,17 +30,18 @@ SET time_zone = "+00:00";
 CREATE TABLE `kontrakan` (
   `id_kontrakan` int(11) NOT NULL,
   `tipe_kamar` varchar(50) DEFAULT NULL,
-  `harga` int(11) DEFAULT NULL
+  `harga` int(11) DEFAULT NULL,
+  `jatuh_tempo` int(2) DEFAULT 10,
+  `id_penyewa` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `kontrakan`
 --
 
-INSERT INTO `kontrakan` (`id_kontrakan`, `tipe_kamar`, `harga`) VALUES
-(1, 'Kamar A001', 1100000),
-(2, 'Kamar A002', 1000000),
-(3, 'Kamar A003', 1000000);
+INSERT INTO `kontrakan` (`id_kontrakan`, `tipe_kamar`, `harga`, `jatuh_tempo`, `id_penyewa`) VALUES
+(6, 'Kamar A001', 1000000, 6, 1),
+(7, 'Kamar A004', 1200000, 7, 2);
 
 -- --------------------------------------------------------
 
@@ -64,14 +65,11 @@ CREATE TABLE `pembayaran` (
 --
 
 INSERT INTO `pembayaran` (`id_pembayaran`, `id_penyewa`, `id_kontrakan`, `bulan`, `tahun`, `jatuh_tempo`, `tanggal_bayar`, `status`) VALUES
-(1, 1, 1, 'Januari', 2026, '2026-01-08', '2026-01-14', 'Terlambat'),
-(2, 3, 1, 'Januari', 2026, '2026-01-08', '2026-01-10', 'Terlambat'),
-(3, 2, 1, 'Januari', 2026, '2026-01-08', '2026-01-05', 'Lunas'),
-(4, 5, 2, 'Januari', 2026, '2026-01-08', '2026-01-12', 'Terlambat'),
-(5, 4, 2, 'Januari', 2026, '2026-01-08', '2026-01-08', 'Lunas'),
-(6, 2, 1, 'Januari', 2026, '2026-01-08', '2026-01-13', 'Terlambat'),
-(7, 2, 1, 'Januari', 2026, '2026-01-08', '2026-01-09', 'Terlambat'),
-(8, 2, 1, 'Januari', 2026, '2026-01-08', '2026-01-11', 'Terlambat');
+(15, 1, 6, 'Januari', 2026, '2026-01-06', '2026-02-12', 'Terlambat'),
+(17, 1, 6, 'Februari', 2026, '2026-02-06', '2026-01-15', 'Lunas'),
+(18, 1, 6, 'Maret', 2026, '2026-03-06', '2026-03-17', 'Terlambat'),
+(19, 2, 7, 'Januari', 2026, '2026-01-07', '2026-01-01', 'Lunas'),
+(20, 2, 7, 'Februari', 2026, '2026-02-07', '2026-02-04', 'Lunas');
 
 -- --------------------------------------------------------
 
@@ -82,6 +80,7 @@ INSERT INTO `pembayaran` (`id_pembayaran`, `id_penyewa`, `id_kontrakan`, `bulan`
 CREATE TABLE `penyewa` (
   `id_penyewa` int(11) NOT NULL,
   `nama_penyewa` varchar(100) NOT NULL,
+  `id_kontrakan` int(11) DEFAULT NULL,
   `no_hp` varchar(20) DEFAULT NULL,
   `alamat` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -90,12 +89,9 @@ CREATE TABLE `penyewa` (
 -- Dumping data for table `penyewa`
 --
 
-INSERT INTO `penyewa` (`id_penyewa`, `nama_penyewa`, `no_hp`, `alamat`) VALUES
-(1, 'RIzky Hidayatullah', '0823165464561', 'ciputat timur'),
-(2, 'Nada', '08465135135', 'Jakarta Selatan'),
-(3, 'Irvan', '0845132131', 'Depok'),
-(4, 'Haris', '08515132132', 'Pondok Petir'),
-(5, 'Faatir', '084651313', 'Bekasi');
+INSERT INTO `penyewa` (`id_penyewa`, `nama_penyewa`, `id_kontrakan`, `no_hp`, `alamat`) VALUES
+(1, 'Haris', 6, '08342653274', 'Ciputat Raya'),
+(2, 'fauzi', 7, '08342653274', 'JL ciputat timur');
 
 -- --------------------------------------------------------
 
@@ -116,7 +112,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id_user`, `username`, `password`, `nama_lengkap`, `role`) VALUES
-(1, 'admin', '$2y$10$Oi.aItsp2jehaGAAkUpbA.EuCZfrvpSwyUxNunkDciWxHYFg7oRMq', 'admin', 'admin');
+(1, 'admin', '$2y$10$TK8t/kfRFNfvI/N6dnEkOOEvfaaikWx5fhsdiSQwmFn1VHXcKmdha', 'RIZKY HIDAYATULLAH', 'admin');
 
 --
 -- Indexes for dumped tables
@@ -155,19 +151,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `kontrakan`
 --
 ALTER TABLE `kontrakan`
-  MODIFY `id_kontrakan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_kontrakan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
-  MODIFY `id_pembayaran` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_pembayaran` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `penyewa`
 --
 ALTER TABLE `penyewa`
-  MODIFY `id_penyewa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_penyewa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`

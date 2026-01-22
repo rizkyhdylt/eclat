@@ -26,7 +26,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background-color: #e2e8f0; }
         .sidebar { min-height: 100vh; background: #1e293b; color: white; position: fixed; width: 260px; z-index: 1000; }
         .main-content { margin-left: 260px; min-height: 100vh; }
         .sidebar-heading { padding: 1.5rem 1rem; font-size: 1.2rem; font-weight: 700; background: #0f172a; text-align: center; }
@@ -105,7 +105,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
             <div class="text-muted" style="font-size: 0.7rem;"><?= date('D, d M Y') ?></div>
         </div>
 
-        <div class="dropdown">
+        <!-- <div class="dropdown">
             <button class="btn btn-light position-relative rounded-circle shadow-sm" style="width: 40px; height: 40px;" data-bs-toggle="dropdown">
                 <i class="fa-regular fa-bell"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.5rem;">
@@ -123,7 +123,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
                     <div class="text-muted small" style="font-size: 0.7rem;">Analisis pola bulan ini siap dilihat.</div>
                 </a></li>
             </ul>
-        </div>
+        </div> -->
 
         <div class="dropdown">
             <button class="btn btn-white d-flex align-items-center gap-2 p-1 pe-3 rounded-pill border shadow-sm" type="button" data-bs-toggle="dropdown">
@@ -135,7 +135,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
                 <i class="fa-solid fa-chevron-down ms-1 text-muted" style="font-size: 0.7rem;"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-3" style="border-radius: 12px; min-width: 200px;">
-                <li><a class="dropdown-item py-2" href="#"><i class="fa-solid fa-user-gear me-2 text-muted"></i> Pengaturan Akun</a></li>
+                <li><a class="dropdown-item py-2" href="index.php?page=pengaturan_akun"><i class="fa-solid fa-user-gear me-2 text-muted"></i> Pengaturan Akun</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item py-2 text-danger" href="auth/logout.php"><i class="fa-solid fa-power-off me-2"></i> Keluar</a></li>
             </ul>
@@ -169,7 +169,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
                         include "master/tambah_unit.php";
                         break;
                     case 'kontrakan_edit':
-                        include "master/edit_unit.php";
+                        include "master/edit_kontrakan.php";
                         break;
                     case 'penyewa_tambah':
                         include "master/tambah_penyewa.php";
@@ -180,15 +180,18 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
                     case 'pembayaran_form':
                         include "transaksi/tambah_pembayaran.php";
                         break;
-                    case 'pembayaran_edit':
+                    case 'edit_pembayaran':
                         include "transaksi/edit_pembayaran.php";
                         break;    
-                    case 'delete_unit':
-                        include "master/delete_unit.php.php";
-                        break;    
+                    case 'pengaturan_akun':
+                        include "auth/pengaturan_akun.php";
+                        break;
+                    case 'delete_kontrakan':
+                        include "master/delete_kontrakan.php";
+                        break;     
                     case 'delete_penyewa':
                         include "master/delete_penyewa.php";
-                        break;    
+                        break;     
                     default:
                         include "dashboard.php";
                         break;

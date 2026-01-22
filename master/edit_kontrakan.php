@@ -1,23 +1,18 @@
 <?php
-// 1. Ambil ID Penyewa dari URL
+// 1. Ambil ID dari URL
 $id = isset($_GET['id']) ? mysqli_real_escape_string($conn, $_GET['id']) : '';
 
 // 2. Logika Update Data (Dijalankan saat tombol simpan diklik)
 if (isset($_POST['update'])) {
-    $nama   = mysqli_real_escape_string($conn, $_POST['nama_penyewa']);
-    $no_hp  = mysqli_real_escape_string($conn, $_POST['no_hp']);
-    $alamat = mysqli_real_escape_string($conn, $_POST['alamat']);
+    $tipe_kamar = mysqli_real_escape_string($conn, $_POST['tipe_kamar']);
+    $harga      = mysqli_real_escape_string($conn, $_POST['harga']);
 
-    $query_update = "UPDATE penyewa SET 
-                        nama_penyewa = '$nama', 
-                        no_hp = '$no_hp', 
-                        alamat = '$alamat' 
-                     WHERE id_penyewa = '$id'";
+    $query_update = "UPDATE kontrakan SET tipe_kamar = '$tipe_kamar', harga = '$harga' WHERE id_kontrakan = '$id'";
     
     if (mysqli_query($conn, $query_update)) {
         echo "<script>
-                alert('Data penyewa berhasil diperbarui!');
-                window.location.href='index.php?page=penyewa';
+                alert('Data unit berhasil diperbarui!');
+                window.location.href='index.php?page=kontrakan';
               </script>";
     } else {
         echo "<div class='alert alert-danger'>Gagal memperbarui data: " . mysqli_error($conn) . "</div>";
@@ -25,12 +20,12 @@ if (isset($_POST['update'])) {
 }
 
 // 3. Ambil data lama untuk ditampilkan di Form
-$query_get = mysqli_query($conn, "SELECT * FROM penyewa WHERE id_penyewa = '$id'");
+$query_get = mysqli_query($conn, "SELECT * FROM kontrakan WHERE id_kontrakan = '$id'");
 $data_lama = mysqli_fetch_assoc($query_get);
 
-// Jika ID tidak ditemukan di database
+// Jika ID tidak ditemukan
 if (!$data_lama) {
-    echo "<script>alert('Data penyewa tidak ditemukan!'); window.location.href='index.php?page=penyewa';</script>";
+    echo "<script>alert('Data tidak ditemukan!'); window.location.href='index.php?page=kontrakan';</script>";
     exit;
 }
 ?>
@@ -39,15 +34,15 @@ if (!$data_lama) {
 <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-right">
     <div>
         <h4 class="fw-bold mb-1">
-            <i class="fa-solid fa-user-pen text-warning me-2"></i>
-            Edit Data Penyewa
+            <i class="fa-solid fa-edit text-warning me-2"></i>
+            Edit Unit Kontrakan
         </h4>
         <p class="text-muted small mb-0">
             <i class="fa-solid fa-hashtag me-1"></i>
-            ID Penyewa: <span class="badge bg-secondary">PNY-<?= $id ?></span>
+            ID Unit: <span class="badge bg-secondary"><?= $id ?></span>
         </p>
     </div>
-    <a href="index.php?page=penyewa" class="btn btn-secondary">
+    <a href="index.php?page=kontrakan" class="btn btn-secondary">
         <i class="fa-solid fa-arrow-left me-2"></i>Kembali
     </a>
 </div>
@@ -66,59 +61,47 @@ if (!$data_lama) {
                 <form action="" method="POST">
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="fa-solid fa-user text-warning me-1"></i>
-                            Nama Lengkap
+                            <i class="fa-solid fa-bed text-warning me-1"></i>
+                            Tipe Kamar / Nama Unit
                         </label>
                         <input 
                             type="text" 
-                            name="nama_penyewa" 
+                            name="tipe_kamar" 
                             class="form-control form-control-lg" 
-                            value="<?= htmlspecialchars($data_lama['nama_penyewa']) ?>" 
+                            value="<?= htmlspecialchars($data_lama['tipe_kamar']) ?>" 
                             required
                         >
-                        <small class="text-muted">Ubah nama sesuai identitas resmi (KTP/SIM)</small>
+                        <small class="text-muted">Ubah nama atau kode identifikasi kamar</small>
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="fa-brands fa-whatsapp text-success me-1"></i>
-                            Nomor WhatsApp/HP
+                            <i class="fa-solid fa-money-bill-wave text-success me-1"></i>
+                            Harga Sewa (Per Bulan)
                         </label>
-                        <input 
-                            type="tel" 
-                            name="no_hp" 
-                            class="form-control form-control-lg" 
-                            value="<?= $data_lama['no_hp'] ?>" 
-                            pattern="[0-9]{10,13}"
-                            required
-                        >
-                        <small class="text-muted">Format: 08xxxxxxxxxx (10-13 digit angka)</small>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">
-                            <i class="fa-solid fa-location-dot text-danger me-1"></i>
-                            Alamat Asal
-                        </label>
-                        <textarea 
-                            name="alamat" 
-                            class="form-control form-control-lg" 
-                            rows="4" 
-                            required
-                        ><?= htmlspecialchars($data_lama['alamat']) ?></textarea>
-                        <small class="text-muted">Alamat lengkap sesuai KTP</small>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">Rp</span>
+                            <input 
+                                type="number" 
+                                name="harga" 
+                                class="form-control" 
+                                value="<?= $data_lama['harga'] ?>" 
+                                required
+                            >
+                        </div>
+                        <small class="text-muted">Ubah harga sewa bulanan dalam rupiah</small>
                     </div>
 
                     <div class="alert alert-warning bg-warning bg-opacity-10 border-0 mb-4">
                         <i class="fa-solid fa-exclamation-triangle me-2"></i>
-                        <strong>Perhatian:</strong> Pastikan data yang diubah sudah benar sebelum menyimpan.
+                        <strong>Perhatian:</strong> Perubahan harga akan mempengaruhi pembayaran periode berikutnya.
                     </div>
 
                     <div class="d-flex gap-2">
                         <button type="submit" name="update" class="btn btn-warning btn-lg flex-fill text-white">
                             <i class="fa-solid fa-check me-2"></i>Update Data
                         </button>
-                        <a href="index.php?page=penyewa" class="btn btn-outline-secondary btn-lg">
+                        <a href="index.php?page=kontrakan" class="btn btn-outline-secondary btn-lg">
                             <i class="fa-solid fa-times me-2"></i>Batal
                         </a>
                     </div>
@@ -134,19 +117,13 @@ if (!$data_lama) {
                     Data Sebelumnya
                 </h6>
                 <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <small class="text-muted d-block">Nama Lengkap</small>
-                        <p class="mb-0 fw-semibold"><?= htmlspecialchars($data_lama['nama_penyewa']) ?></p>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Tipe Kamar</small>
+                        <p class="mb-2 fw-semibold"><?= htmlspecialchars($data_lama['tipe_kamar']) ?></p>
                     </div>
-                    <div class="col-md-4 mb-2">
-                        <small class="text-muted d-block">No. WhatsApp/HP</small>
-                        <p class="mb-0 fw-semibold"><?= $data_lama['no_hp'] ?></p>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <small class="text-muted d-block">Alamat</small>
-                        <p class="mb-0 fw-semibold text-truncate" title="<?= htmlspecialchars($data_lama['alamat']) ?>">
-                            <?= htmlspecialchars($data_lama['alamat']) ?>
-                        </p>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Harga Sewa</small>
+                        <p class="mb-2 fw-semibold">Rp <?= number_format($data_lama['harga'], 0, ',', '.') ?></p>
                     </div>
                 </div>
             </div>
@@ -161,9 +138,9 @@ if (!$data_lama) {
 }
 
 /* Form Controls */
-.form-control {
+.form-control,
+.input-group-text {
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
 }
 
 .form-control:focus {
@@ -175,10 +152,9 @@ if (!$data_lama) {
     padding: 0.75rem 1rem;
 }
 
-/* Textarea */
-textarea.form-control {
-    resize: vertical;
-    min-height: 100px;
+.input-group-lg .input-group-text {
+    font-weight: 600;
+    background-color: #f8fafc;
 }
 
 /* Button Styling */
@@ -229,11 +205,6 @@ small.text-muted {
     font-size: 0.8rem;
     display: block;
     margin-top: 0.25rem;
-}
-
-/* Text truncate with tooltip */
-.text-truncate {
-    max-width: 100%;
 }
 
 /* Responsive */

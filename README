@@ -1,0 +1,45 @@
+# 🏠 Sistem Informasi Manajemen Kontrakan & Pembayaran
+
+Sistem berbasis web ini dirancang untuk mengelola data penyewa, unit kontrakan, dan pencatatan transaksi pembayaran secara otomatis dengan integrasi analisis data mining.
+
+## 🚀 Fitur Utama
+
+### 💳 Manajemen Transaksi Pembayaran
+* **Pencatatan Otomatis:** Input transaksi yang cerdas di mana sistem akan menghitung tanggal jatuh tempo secara otomatis.
+* **Status Dinamis:** Penentuan status (Lunas, Belum Lunas, atau Terlambat) dihitung secara real-time berdasarkan perbandingan tanggal bayar dan jatuh tempo.
+* **In-Page Delete:** Penghapusan data dilakukan di halaman yang sama tanpa mengganggu alur kerja pengguna (refresh halaman cerdas).
+* **Edit Page Khusus:** Halaman edit khusus untuk menyesuaikan tanggal pembayaran dengan proteksi periode agar data tetap konsisten.
+
+### 📊 Laporan Pendapatan (Print Ready)
+* **Filter Fleksibel:** Menampilkan semua data secara default dan menyediakan filter per bulan/tahun.
+* **Print-Friendly CSS:** Laporan didesain khusus agar rapi saat dicetak ke PDF atau Printer (menyembunyikan menu/tombol navigasi saat diprint).
+* **Auto-Calculated Total:** Penghitungan otomatis total pendapatan berdasarkan filter yang dipilih.
+
+### 🧠 Analisis Algoritma ECLAT
+* **Data Mining:** Implementasi algoritma ECLAT (Equivalence Class Transformation).
+* **Pattern Discovery:** Menganalisis pola keterlambatan pembayaran penyewa menggunakan format data vertikal.
+* **Insight Bisnis:** Membantu pengelola dalam mengidentifikasi tren keterlambatan untuk pengambilan keputusan yang lebih baik.
+
+## 🛠️ Teknologi yang Digunakan
+* **PHP 8.x** (Native/Procedural)
+* **MySQL/MariaDB** (Database Management)
+* **Bootstrap 5** (UI Framework)
+* **Font Awesome 6** (Iconography)
+* **AOS (Animate On Scroll)** (Visual Animation)
+
+## 📂 Struktur File Penting
+* `index.php` - Routing utama menggunakan switch case.
+* `transaksi/pembayaran.php` - Halaman riwayat transaksi & fungsi hapus.
+* `transaksi/edit_pembayaran.php` - Logika pembaruan data & status.
+* `laporan/pembayaran.php` - Modul laporan dan fungsi cetak.
+* `analisis/eclat.php` - Modul pemrosesan algoritma data mining.
+
+## ⚙️ Cara Instalasi
+1. Clone repositori ini.
+2. Impor file `.sql` ke database MySQL Anda.
+3. Sesuaikan konfigurasi database di file `koneksi.php`.
+4. Jalankan pada server lokal (XAMPP/Laragon).
+
+---
+LOGIN
+
