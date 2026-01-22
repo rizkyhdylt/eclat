@@ -50,7 +50,7 @@ if (!$result_p) {
                                 <a href="index.php?page=penyewa_edit&id=<?= $row['id_penyewa'] ?>" class="btn btn-sm btn-white text-warning border-end">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
-                                <a href="master/penyewa_proses.php?hapus=<?= $row['id_penyewa'] ?>" class="btn btn-sm btn-white text-danger" onclick="return confirm('Hapus data penyewa ini?')">
+                                <a href="master/delete_penyewa.php?hapus=<?= $row['id_penyewa'] ?>" class="btn btn-sm btn-white text-danger" onclick="return confirm('Hapus data penyewa ini?')">
                                     <i class="fa-solid fa-trash"></i>
                                 </a>
                             </div>

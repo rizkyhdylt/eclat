@@ -183,6 +183,12 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
                     case 'pembayaran_edit':
                         include "transaksi/edit_pembayaran.php";
                         break;    
+                    case 'delete_unit':
+                        include "master/delete_unit.php.php";
+                        break;    
+                    case 'delete_penyewa':
+                        include "master/delete_penyewa.php";
+                        break;    
                     default:
                         include "dashboard.php";
                         break;

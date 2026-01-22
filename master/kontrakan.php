@@ -61,7 +61,7 @@ if (!$data) {
                                    class="btn btn-sm btn-light text-warning hover-scale" title="Edit">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
-                                <a href="master/kontrakan_proses.php?hapus=<?= $row['id_kontrakan'] ?>" 
+                                <a href="master/delete_unit.php?hapus=<?= $row['id_kontrakan'] ?>" 
                                    class="btn btn-sm btn-light text-danger hover-scale" 
                                    onclick="return confirm('Apakah Anda yakin ingin menghapus unit ini?')" title="Hapus">
                                     <i class="fa-solid fa-trash"></i>
