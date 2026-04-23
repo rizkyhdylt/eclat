@@ -1,5 +1,5 @@
 <?php
 session_start();
 session_destroy();
-header("Location:/nada/index.php");
+header("Location:https://kostanpakdarsono.online/");
 exit;

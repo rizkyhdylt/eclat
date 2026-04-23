@@ -1,36 +1,41 @@
 <?php
+// Pastikan koneksi tersedia - sesuaikan path jika folder berbeda
 include "../config/config.php"; 
 
-// --- LOGIKA HAPUS ---
-if (isset($_GET['hapus'])) {
-    $id = $_GET['hapus'];
-    
-    $del = mysqli_query($conn, "DELETE FROM kontrakan WHERE id_kontrakan = '$id'");
-    
-    if ($del) {
-        // Reset Auto Increment agar ID berikutnya mengisi celah yang kosong
-        mysqli_query($conn, "ALTER TABLE kontrakan AUTO_INCREMENT = 1");
-        
-        echo "<script>alert('Data Berhasil Dihapus'); window.location.href='../index.php?page=kontrakan';</script>";
-    } else {
-        echo "<script>alert('Gagal Hapus'); window.location.href='../index.php?page=kontrakan';</script>";
-    }
-}
+if (isset($_GET['id'])) {
+    $id = mysqli_real_escape_string($conn, $_GET['id']);
 
-// --- LOGIKA TAMBAH (Jika dipisah ke file ini) ---
-if (isset($_POST['simpan'])) {
-    $tipe = mysqli_real_escape_string($conn, $_POST['tipe_kamar']);
-    $harga = mysqli_real_escape_string($conn, $_POST['harga']);
+    // 1. VALIDASI: Cek apakah unit masih terisi penyewa
+    $check_query = "SELECT id_penyewa FROM kontrakan WHERE id_kontrakan = '$id'";
+    $check_result = mysqli_query($conn, $check_query);
+    $data_unit = mysqli_fetch_assoc($check_result);
 
-    // Reset sebelum insert untuk memastikan urutan paling optimal
-    mysqli_query($conn, "ALTER TABLE kontrakan AUTO_INCREMENT = 1");
-    
-    $ins = mysqli_query($conn, "INSERT INTO kontrakan (tipe_kamar, harga) VALUES ('$tipe', '$harga')");
-    
-    if ($ins) {
-        echo "<script>alert('Data Berhasil Ditambah'); window.location.href='../index.php?page=kontrakan';</script>";
-    } else {
-        echo "<script>alert('Gagal Simpan'); window.location.href='../index.php?page=kontrakan';</script>";
+    if (!empty($data_unit['id_penyewa'])) {
+        // Jika ada penyewa, batalkan hapus (keamanan data)
+        echo "<script>
+                alert('Gagal! Unit masih terisi. Silakan hapus atau pindahkan penyewa terlebih dahulu.');
+                window.location.href='../index.php?page=kontrakan';
+              </script>";
+        exit;
     }
+
+    // 2. PROSES HAPUS
+    $query_hapus = "DELETE FROM kontrakan WHERE id_kontrakan = '$id'";
+    
+    if (mysqli_query($conn, $query_hapus)) {
+        // Berhasil: Redirect menggunakan JS untuk menghindari error "Headers Already Sent"
+        echo "<script>
+                window.location.href='../index.php?page=kontrakan&status=success_hapus';
+              </script>";
+    } else {
+        // Jika gagal karena constraint database
+        echo "<script>
+                alert('Gagal menghapus data: Unit ini mungkin memiliki riwayat transaksi.');
+                window.location.href='../index.php?page=kontrakan';
+              </script>";
+    }
+} else {
+    // Jika akses tanpa ID
+    echo "<script>window.location.href='../index.php?page=kontrakan';</script>";
 }
 ?>

@@ -42,4 +42,13 @@ Sistem berbasis web ini dirancang untuk mengelola data penyewa, unit kontrakan, 
 
 ---
 LOGIN
+admin
+123456 atau 123
 
+Maksud dari Min. Support 10% dalam dashboard SI-KONTRAK Anda adalah ambang batas minimal (threshold) yang digunakan algoritma ECLAT untuk menentukan apakah sebuah pola keterlambatan dianggap cukup "penting" untuk ditampilkan atau tidak.
+
+Berikut penjelasan detailnya:
+
+1. Cara Kerja FilterAlgoritma ECLAT bekerja dengan cara menghitung seberapa sering seorang penyewa terlambat dibandingkan dengan total seluruh transaksi pembayaran yang ada di database.Jika Support < 10%: Pola tersebut dianggap sebagai kejadian kebetulan atau "noise" dan tidak akan dimunculkan dalam tabel hasil analisis.Jika Support ≥ 10%: Pola tersebut dianggap valid dan akan muncul di daftar peringkat untuk dipantau oleh Admin.
+2. Contoh PerhitunganMisalkan total transaksi pembayaran di database Anda ada 100 data:Jika Haris terlambat sebanyak 5 kali, maka nilainya adalah $5\%$. Karena $5\% < 10\%$, maka nama Haris tidak akan muncul di tabel analisis.Jika Fauzi terlambat sebanyak 12 kali, maka nilainya adalah $12\%$. Karena $12\% \geq 10\%$, maka nama Fauzi muncul di tabel sebagai pola yang perlu diwaspadai.
+3. Kenapa Harus Ada Batas 10%?Tujuannya adalah untuk efisiensi dan fokus. Jika Anda memiliki ribuan data, Admin tentu tidak ingin melihat penyewa yang hanya sekali terlambat karena faktor ketidaksengajaan. Batas 10% memastikan Admin hanya fokus pada "penyakit kronis" atau orang-orang yang memang punya kebiasaan terlambat secara konsisten.
