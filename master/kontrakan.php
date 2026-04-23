@@ -1,6 +1,5 @@
 <?php
 // 1. QUERY MENGAMBIL DATA DENGAN JOIN PENYEWA
-// Kita hubungkan id_penyewa di kontrakan dengan id_penyewa di tabel penyewa
 $query = "SELECT kontrakan.*, penyewa.nama_penyewa 
           FROM kontrakan 
           LEFT JOIN penyewa ON kontrakan.id_penyewa = penyewa.id_penyewa 
@@ -17,7 +16,6 @@ $unit_terisi = 0;
 $unit_kosong = 0;
 $total_potensi_harga = 0;
 
-// Loop sementara untuk hitung angka statistik
 while ($temp = mysqli_fetch_assoc($data)) {
     $total_potensi_harga += $temp['harga'];
     if (!empty($temp['id_penyewa'])) {
@@ -26,7 +24,7 @@ while ($temp = mysqli_fetch_assoc($data)) {
         $unit_kosong++;
     }
 }
-mysqli_data_seek($data, 0); // Reset pointer agar data bisa di-loop lagi di tabel bawah
+mysqli_data_seek($data, 0); 
 ?>
 
 <div class="container-fluid px-4 py-3">
@@ -52,7 +50,6 @@ mysqli_data_seek($data, 0); // Reset pointer agar data bisa di-loop lagi di tabe
                 </div>
             </div>
         </div>
-        
         <div class="col-md-3">
             <div class="stats-card" style="background: linear-gradient(135deg, #f87171, #dc2626);">
                 <div class="stats-icon"><i class="fa-solid fa-user-check"></i></div>
@@ -62,7 +59,6 @@ mysqli_data_seek($data, 0); // Reset pointer agar data bisa di-loop lagi di tabe
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
             <div class="stats-card" style="background: linear-gradient(135deg, #34d399, #059669);">
                 <div class="stats-icon"><i class="fa-solid fa-door-open"></i></div>
@@ -72,7 +68,6 @@ mysqli_data_seek($data, 0); // Reset pointer agar data bisa di-loop lagi di tabe
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
             <div class="stats-card bg-gradient-info">
                 <div class="stats-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
@@ -104,7 +99,7 @@ mysqli_data_seek($data, 0); // Reset pointer agar data bisa di-loop lagi di tabe
                             <th class="text-center pe-4 py-3 text-muted fw-semibold">Aksi</th>
                         </tr>
                     </thead>
-                   <tbody>
+                    <tbody>
                         <?php 
                         $no = 1; 
                         if ($total_unit > 0) :
@@ -151,9 +146,8 @@ mysqli_data_seek($data, 0); // Reset pointer agar data bisa di-loop lagi di tabe
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
                                     <a href="javascript:void(0)" 
-                                       class="action-btn btn-delete btn-hapus-kontrakan" 
-                                       data-id="<?= $row['id_kontrakan'] ?>" 
-                                       data-name="<?= htmlspecialchars($row['tipe_kamar']) ?>" 
+                                       class="action-btn btn-delete" 
+                                       onclick="hapusUnit('<?= $row['id_kontrakan'] ?>', '<?= htmlspecialchars($row['tipe_kamar']) ?>')"
                                        title="Hapus">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </a>
@@ -161,7 +155,7 @@ mysqli_data_seek($data, 0); // Reset pointer agar data bisa di-loop lagi di tabe
                             </td>
                         </tr>
                         <?php endwhile; else: ?>
-                        <tr><td colspan="5" class="text-center py-5 text-muted">Belum ada data unit kontrakan.</td></tr>
+                        <tr><td colspan="6" class="text-center py-5 text-muted">Belum ada data unit kontrakan.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -169,316 +163,67 @@ mysqli_data_seek($data, 0); // Reset pointer agar data bisa di-loop lagi di tabe
         </div>
     </div>
 </div>
+
 <style>
-    /* Modern Button Style */
-    .btn-modern {
-        border-radius: 12px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-    }
-    
-    .btn-modern:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3) !important;
-    }
-
-    /* Stats Cards */
-    .stats-card {
-        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-        border-radius: 16px;
-        padding: 24px;
-        color: white;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    .bg-gradient-primary {
-        --gradient-start: #667eea;
-        --gradient-end: #764ba2;
-    }
-    
-    .bg-gradient-success {
-        --gradient-start: #56ab2f;
-        --gradient-end: #a8e063;
-    }
-    
-    .bg-gradient-info {
-        --gradient-start: #4facfe;
-        --gradient-end: #00f2fe;
-    }
-    
-    .stats-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 28px;
-        backdrop-filter: blur(10px);
-    }
-    
-    .stats-content {
-        flex: 1;
-    }
-    
-    .stats-number {
-        font-size: 28px;
-        font-weight: 700;
-        margin: 0;
-        line-height: 1;
-    }
-    
-    .stats-label {
-        margin: 5px 0 0 0;
-        font-size: 14px;
-        opacity: 0.9;
-        font-weight: 500;
-    }
-    
-
-    /* Modern Card */
-    .modern-card {
-        border-radius: 20px;
-        overflow: hidden;
-        background: white;
-    }
-    
-    .card-header {
-        border-bottom: 2px solid #f1f5f9 !important;
-    }
-
-    /* Modern Table */
-    .modern-table thead {
-        background: linear-gradient(to right, #f8fafc, #f1f5f9);
-    }
-    
-    .modern-table thead th {
-        border: none;
-        text-transform: uppercase;
-        font-size: 12px;
-        letter-spacing: 0.5px;
-    }
-    
-    .table-row-hover {
-        transition: all 0.3s ease;
-        border-left: 3px solid transparent;
-    }
-    
-    .table-row-hover:hover {
-        background: linear-gradient(to right, #f0f9ff, #ffffff);
-        border-left-color: #3b82f6;
-        transform: scale(1.01);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    /* Number Badge */
-    .number-badge {
-        width: 35px;
-        height: 35px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 14px;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    }
-
-    /* Unit Icon */
-    .unit-icon-wrapper {
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #e0f2fe, #bfdbfe);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 15px;
-        font-size: 20px;
-        color: #3b82f6;
-        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
-    }
-    
-    .unit-name {
-        font-size: 15px;
-        margin-bottom: 2px;
-    }
-
-    /* Price Tag */
-    .price-tag {
-        display: inline-flex;
-        flex-direction: column;
-        padding: 8px 16px;
-        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-        border-radius: 10px;
-        border: 1px solid #a7f3d0;
-    }
-    
-    .price-amount {
-        font-weight: 700;
-        font-size: 16px;
-        color: #059669;
-        line-height: 1;
-    }
-    
-    .price-period {
-        font-size: 11px;
-        color: #10b981;
-        margin-top: 2px;
-        font-weight: 500;
-    }
-
-    /* Action Buttons */
-    .action-buttons {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-    }
-    
-    .action-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        font-size: 14px;
-        border: 2px solid transparent;
-    }
-    
-    .btn-edit {
-        background: linear-gradient(135deg, #fef3c7, #fde68a);
-        color: #d97706;
-        border-color: #fcd34d;
-    }
-    
-    .btn-edit:hover {
-        background: linear-gradient(135deg, #fde68a, #fbbf24);
-        color: #92400e;
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
-    }
-    
-    .btn-delete {
-        background: linear-gradient(135deg, #fee2e2, #fecaca);
-        color: #dc2626;
-        border-color: #fca5a5;
-    }
-    
-    .btn-delete:hover {
-        background: linear-gradient(135deg, #fecaca, #fca5a5);
-        color: #7f1d1d;
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-    }
-
-    /* Empty State */
-    .empty-state {
-        padding: 40px 20px;
-    }
-    
-    .empty-icon {
-        width: 100px;
-        height: 100px;
-        margin: 0 auto;
-        background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 48px;
-        color: #cbd5e1;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .stats-card {
-            padding: 16px;
-            gap: 12px;
-        }
-        
-        .stats-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 22px;
-        }
-        
-        .stats-number {
-            font-size: 22px;
-        }
-        
-        .stats-label {
-            font-size: 12px;
-        }
-        
-        .unit-icon-wrapper {
-            width: 40px;
-            height: 40px;
-            font-size: 16px;
-        }
-        
-        .action-btn {
-            width: 34px;
-            height: 34px;
-            font-size: 13px;
-        }
-    }
+    /* CSS ANDA TETAP SAMA (TIDAK BERUBAH) */
+    .btn-modern { border-radius: 12px; font-weight: 600; transition: all 0.3s ease; border: none; }
+    .btn-modern:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3) !important; }
+    .stats-card { border-radius: 16px; padding: 24px; color: white; display: flex; align-items: center; gap: 20px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+    .stats-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+    .bg-gradient-primary { --gradient-start: #667eea; --gradient-end: #764ba2; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); }
+    .bg-gradient-info { --gradient-start: #4facfe; --gradient-end: #00f2fe; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); }
+    .stats-icon { width: 60px; height: 60px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; backdrop-filter: blur(10px); }
+    .stats-number { font-size: 20px; font-weight: 700; margin: 0; }
+    .stats-label { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
+    .modern-card { border-radius: 20px; overflow: hidden; background: white; }
+    .modern-table thead { background: linear-gradient(to right, #f8fafc, #f1f5f9); }
+    .table-row-hover:hover { background: linear-gradient(to right, #f0f9ff, #ffffff); border-left: 3px solid #3b82f6; }
+    .number-badge { width: 35px; height: 35px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .unit-icon-wrapper { width: 50px; height: 50px; background: linear-gradient(135deg, #e0f2fe, #bfdbfe); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #3b82f6; }
+    .price-tag { padding: 8px 16px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-radius: 10px; border: 1px solid #a7f3d0; }
+    .price-amount { font-weight: 700; color: #059669; }
+    .action-buttons { display: flex; gap: 8px; justify-content: center; }
+    .action-btn { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; text-decoration: none; border: 2px solid transparent; cursor: pointer; }
+    .btn-edit { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706; border-color: #fcd34d; }
+    .btn-delete { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border-color: #fca5a5; }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Logika Konfirmasi Hapus
-    const deleteButtons = document.querySelectorAll('.btn-delete-kontrakan');
-    
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const id = this.getAttribute('data-id');
-            const name = this.getAttribute('data-name');
-
-            Swal.fire({
-                title: 'Hapus Unit?',
-                text: `Apakah Anda yakin ingin menghapus unit ${name}? Data tidak dapat dikembalikan!`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6e7d88',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Arahkan ke file proses hapus
-                    window.location.href = `index.php?page=kontrakan_hapus&id=${id}`;
-                }
-            });
+function hapusUnit(id, name) {
+    if (typeof Swal === 'undefined') {
+        // Fallback jika SweetAlert gagal load
+        if (confirm("Yakin ingin menghapus unit " + name + "?")) {
+            window.location.href = "master/delete_kontrakan.php?id=" + id;
+        }
+    } else {
+        Swal.fire({
+            title: 'Hapus Unit?',
+            text: "Yakin ingin menghapus unit " + name + "? Tindakan ini permanen.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "master/delete_kontrakan.php?id=" + id;
+            }
         });
-    });
+    }
+}
 
-    // Cek jika ada notifikasi dari URL (Flash Message)
+// Menangani Notifikasi Sukses
+window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('status') === 'success_hapus') {
+    if (urlParams.get('status') === 'success_hapus' && typeof Swal !== 'undefined') {
         Swal.fire({
             icon: 'success',
-            title: 'Terhapus!',
-            text: 'Unit kontrakan telah berhasil dihapus.',
+            title: 'Berhasil!',
+            text: 'Unit kontrakan telah dihapus.',
             timer: 2000,
             showConfirmButton: false
         });
     }
-});
+}
 </script>

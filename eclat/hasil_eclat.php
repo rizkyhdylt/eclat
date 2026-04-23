@@ -4,7 +4,7 @@
  */
 
 // 1. Ambil data transaksi
-$query = "SELECT p.bulan, p.tahun, p.status, s.nama_penyewa, k.tipe_kamar 
+$query = "SELECT p.id_penyewa, p.bulan, p.tahun, p.status, s.nama_penyewa, s.no_hp, k.tipe_kamar 
           FROM pembayaran p
           JOIN penyewa s ON p.id_penyewa = s.id_penyewa
           JOIN kontrakan k ON p.id_kontrakan = k.id_kontrakan
@@ -17,17 +17,21 @@ $total_transaksi = 0;
 if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
         $total_transaksi++;
-        // ECLAT sederhana: Menghitung kemunculan (Support) status Terlambat
         if ($row['status'] == 'Terlambat') {
             $key = $row['nama_penyewa'] . " [" . $row['tipe_kamar'] . "]";
             if (!isset($pola_terlambat[$key])) {
-                $pola_terlambat[$key] = 0;
+                $pola_terlambat[$key] = [
+                    'frekuensi' => 0,
+                    'no_hp' => $row['no_hp'],
+                    'id_penyewa' => $row['id_penyewa'] // Tambahkan ini
+                ];
             }
-            $pola_terlambat[$key]++;
+            $pola_terlambat[$key]['frekuensi']++;
         }
     }
     arsort($pola_terlambat); 
 }
+
 ?>
 
 <!-- Header Section with Gradient Background -->
@@ -165,84 +169,66 @@ if ($result) {
                     </th>
                 </tr>
             </thead>
-            <tbody>
-                <?php 
-                $no = 1; 
-                if (count($pola_terlambat) > 0) :
-                    foreach ($pola_terlambat as $itemset => $frekuensi) : 
-                        $support = ($frekuensi / $total_transaksi) * 100;
-                        
-                        // Logika Warna Bar
-                        $bar_color = "bar-primary";
-                        $badge_color = "badge-info";
-                        if ($support > 30) {
-                            $bar_color = "bar-warning";
-                            $badge_color = "badge-warning";
-                        }
-                        if ($support > 60) {
-                            $bar_color = "bar-danger";
-                            $badge_color = "badge-danger";
-                        }
-                ?>
-                <tr class="table-row-hover">
-                    <td>
-                        <div class="rank-badge rank-<?= $no ?>"><?= $no++ ?></div>
-                    </td>
-                    <td>
-                        <div class="itemset-info">
-                            <div class="itemset-name"><?= htmlspecialchars($itemset) ?></div>
-                            <div class="itemset-category">
-                                <span class="category-badge">
-                                    <i class="fa-solid fa-tag"></i> Pola Keterlambatan
-                                </span>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="frequency-box">
-                            <span class="frequency-value"><?= $frekuensi ?></span>
-                            <span class="frequency-label">kali</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="progress-container">
-                            <div class="progress-track">
-                                <div class="progress-fill <?= $bar_color ?>" style="width: <?= $support ?>%">
-                                    <span class="progress-glow"></span>
-                                </div>
-                            </div>
-                            <span class="progress-label"><?= number_format($support, 1) ?>%</span>
-                        </div>
-                    </td>
-                    <td class="text-center">
-                        <?php if ($support >= 50) : ?>
-                            <div class="action-badge action-critical">
-                                <i class="fa-solid fa-gavel"></i>
-                                <span>SP 1 Keluar</span>
-                            </div>
-                        <?php else : ?>
-                            <div class="action-badge action-review">
-                                <i class="fa-solid fa-clock-rotate-left"></i>
-                                <span>Review Bulanan</span>
-                            </div>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <?php endforeach; else : ?>
-                <tr>
-                    <td colspan="5" class="text-center py-5">
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <i class="fa-solid fa-face-smile"></i>
-                            </div>
-                            <h5 class="empty-title">Tidak Ada Pola Negatif Terdeteksi</h5>
-                            <p class="empty-text">Semua penyewa memiliki tingkat kepatuhan pembayaran yang sangat baik.</p>
-                            <div class="empty-decoration"></div>
-                        </div>
-                    </td>
-                </tr>
-                <?php endif; ?>
-            </tbody>
+          <tbody>
+    <?php 
+    $no = 1; 
+    if (count($pola_terlambat) > 0) :
+        foreach ($pola_terlambat as $itemset => $data_pola) : 
+            $frekuensi = $data_pola['frekuensi'];
+            $id_penyewa = $data_pola['id_penyewa'];
+            $no_hp_raw = $data_pola['no_hp'];
+            
+            $support = ($frekuensi / $total_transaksi) * 100;
+            $clean_name = explode(" [", $itemset)[0]; 
+
+            $formatted_phone = preg_replace('/^0/', '62', $no_hp_raw);
+
+            // Logika SP & Penentuan Link
+            if ($support >= 80) {
+                $status_text = "SP 3 Keluar"; 
+                $badge_class = "action-critical"; // Pink
+                $icon = "fa-handcuffs";
+                $pesan = "⚠️ *SURAT PERINGATAN KETIGA (SP 3) - FINAL*\n\nYth. *$clean_name*,\n\nSistem kami mendeteksi tingkat keterlambatan pembayaran Anda sudah mencapai tahap kritikal (" . number_format($support, 1) . "%). Segera lunasi dalam 1x24 jam atau kontrak diputus sepihak.";
+                $url_action = "https://api.whatsapp.com/send?phone=$formatted_phone&text=" . urlencode($pesan);
+                $target = 'target="_blank"';
+            } elseif ($support >= 65) {
+                $status_text = "SP 2 Keluar"; 
+                $badge_class = "action-critical"; // Pink
+                $icon = "fa-triangle-exclamation";
+                $pesan = "🔸 *SURAT PERINGATAN KEDUA (SP 2)*\n\nYth. *$clean_name*,\n\nAnda telah terlambat $frekuensi kali. Mohon segera melunasi tunggakan agar tidak berlanjut ke SP 3.";
+                $url_action = "https://api.whatsapp.com/send?phone=$formatted_phone&text=" . urlencode($pesan);
+                $target = 'target="_blank"';
+            } elseif ($support >= 50) {
+                $status_text = "SP 1 Keluar"; 
+                $badge_class = "action-critical"; // Pink
+                $icon = "fa-gavel";
+                $pesan = "🔹 *SURAT PERINGATAN KESATU (SP 1)*\n\nYth. *$clean_name*,\n\nSistem mendeteksi pola keterlambatan pada riwayat kontrak Anda. Mohon kerjasamanya untuk tepat waktu.";
+                $url_action = "https://api.whatsapp.com/send?phone=$formatted_phone&text=" . urlencode($pesan);
+                $target = 'target="_blank"';
+            } else {
+                $status_text = "Review Bulanan"; 
+                $badge_class = "action-review"; // Kuning
+                $icon = "fa-clock-rotate-left";
+                $url_action = "index.php?page=pembayaran&id_penyewa=" . $id_penyewa;
+                $target = '';
+            }
+    ?>
+    <tr class="table-row-hover">
+        <td><div class="rank-badge"><?= $no++ ?></div></td>
+        <td><?= htmlspecialchars($itemset) ?></td>
+        <td><?= $frekuensi ?> kali</td>
+        <td><?= number_format($support, 1) ?>%</td>
+        
+        <td class="text-center">
+            <a href="<?= $url_action ?>" <?= $target ?> class="action-badge <?= $badge_class ?> shadow-sm" 
+               style="text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 100%; border: none;">
+                <i class="fa-solid <?= $icon ?> me-2"></i>
+                <span style="font-weight: 600; font-size: 11px;"><?= $status_text ?></span>
+            </a>
+        </td>
+    </tr>
+    <?php endforeach; endif; ?>
+</tbody>
         </table>
     </div>
 </div>
