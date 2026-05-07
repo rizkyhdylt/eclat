@@ -25,18 +25,170 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
+   
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #e2e8f0; }
-        .sidebar { min-height: 100vh; background: #1e293b; color: white; position: fixed; width: 260px; z-index: 1000; }
-        .main-content { margin-left: 260px; min-height: 100vh; }
-        .sidebar-heading { padding: 1.5rem 1rem; font-size: 1.2rem; font-weight: 700; background: #0f172a; text-align: center; }
-        .nav-link { color: #94a3b8; padding: 12px 20px; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-        .nav-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
-        .nav-link.active { color: #fff; background: #3b82f6; border-radius: 8px; margin: 5px 10px; }
-        .top-nav { background: white; border-bottom: 1px solid #e2e8f0; padding: 15px 30px; position: sticky; top: 0; z-index: 999; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            min-height: 100vh;
+            background: #1e293b;
+            color: white;
+            position: fixed;
+            width: 260px;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .sidebar-heading {
+            padding: 1.5rem 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: #0f172a;
+            text-align: center;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .nav-link.active {
+            color: #fff;
+            background: #3b82f6;
+            border-radius: 8px;
+            margin: 5px 10px;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* TOP NAV */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        /* DROPDOWN */
+        .dropdown-menu {
+            z-index: 99999;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+
+            .sidebar {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .top-nav {
+                padding: 12px 15px;
+            }
+
+            .p-4 {
+                padding: 1rem !important;
+            }
+        }
     </style>
 </head>
 <body>
+
+
+<!-- MOBILE SIDEBAR -->
+<div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="mobileSidebar">
+
+    <div class="offcanvas-header border-bottom border-secondary">
+        <h5 class="offcanvas-title">
+            <i class="fa-solid fa-house-chimney me-2 text-primary"></i>
+            SI-KONTRAK
+        </h5>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="offcanvas">
+        </button>
+    </div>
+
+    <div class="offcanvas-body p-0">
+
+        <ul class="nav flex-column mt-3">
+
+            <li class="nav-item">
+                <a href="index.php?page=dashboard"
+                   class="nav-link <?= $page == 'dashboard' ? 'active' : '' ?>">
+                    <i class="fa-solid fa-gauge"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="index.php?page=kontrakan"
+                   class="nav-link <?= $page == 'kontrakan' ? 'active' : '' ?>">
+                    <i class="fa-solid fa-door-open"></i>
+                    Data Kontrakan
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="index.php?page=penyewa"
+                   class="nav-link <?= $page == 'penyewa' ? 'active' : '' ?>">
+                    <i class="fa-solid fa-users"></i>
+                    Data Penyewa
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="index.php?page=pembayaran"
+                   class="nav-link <?= $page == 'pembayaran' ? 'active' : '' ?>">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    Pembayaran
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="index.php?page=hasil_eclat"
+                   class="nav-link <?= $page == 'hasil_eclat' ? 'active' : '' ?>">
+                    <i class="fa-solid fa-chart-line"></i>
+                    Analisis ECLAT
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="index.php?page=laporan"
+                   class="nav-link <?= $page == 'laporan' ? 'active' : '' ?>">
+                    <i class="fa-solid fa-file-export"></i>
+                    Laporan
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</div>
 
     <aside class="sidebar d-none d-md-block">
         <div class="sidebar-heading">
